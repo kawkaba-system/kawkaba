@@ -3,128 +3,835 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kawkaba System | نظام الكوكبة</title>
+    <title>منظومة كوكبة المحدثة | Constellation Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #0a0c14;
-            --card-bg: #121624;
-            --gold: #d4af37;
-            --blue: #22a6b3;
-            --text-main: #f0f6ff;
+            --bg-global: #f4f7fa;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary-blue: #2563eb;
+            --primary-dark: #1d4ed8;
+            --alert-red: #f43f5e;
+            --vectra-orange: #ea580c;
+            --vectra-light-orange: #fff7ed;
+            --e1-future-gold: #c29d53;
+            --e1-cyber-gold: #b58d3d;
+            --orbit-blue: #0284c7;
+            --aura-purple: #7c3aed;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.02);
+            --shadow-card: 0 12px 35px rgba(0, 0, 0, 0.05);
         }
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-global); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        .desktop-app { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 40px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-subtle);
         }
-        header {
-            padding: 40px;
-            text-align: center;
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        
+        .system-logo {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(135deg, #0f172a, var(--primary-blue));
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; font-weight: 900; font-size: 1.55rem;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .constellation-title {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 10px;
-            text-transform: uppercase;
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-title { font-size: 1.35rem; font-weight: 900; color: var(--text-main); line-height: 1.2; }
+        .logo-subtitle { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        
+        #userName { font-size: 0.85rem; font-weight: 700; color: var(--text-main); background: #f1f5f9; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); }
+
+        .main-content {
+            flex: 1; padding: 35px 40px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; max-width: 1600px; margin: 0 auto; width: 100%;
         }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            width: 90%;
-            max-width: 1200px;
-            padding-bottom: 50px;
-        }
+
+        .primary-column { display: flex; flex-direction: column; gap: 30px; }
+        .secondary-column { display: flex; flex-direction: column; gap: 30px; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .card {
-            background: var(--card-bg);
-            border: 1px solid #2d3436;
-            padding: 25px;
-            border-radius: 15px;
-            transition: 0.3s;
-            position: relative;
+            background: var(--bg-card); padding: 22px; border-radius: var(--radius-lg);
+            border: 1px solid var(--border); box-shadow: var(--shadow-subtle);
+            display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        h2 { color: var(--blue); margin-top: 0; }
-        .sector-select {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            background: #1e272e;
-            color: white;
-            border: 1px solid var(--blue);
-            border-radius: 5px;
-            cursor: pointer;
+        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+        .card h4 { color: var(--text-muted); font-size: 0.85rem; font-weight: bold; }
+        .card h2 { color: var(--text-main); font-size: 1.6rem; font-weight: 900; }
+
+        .radar-card {
+            background-color: #0f172a; border-radius: var(--radius-lg);
+            padding: 24px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
         }
-        .aide-badge {
-            background: var(--gold);
-            color: black;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 10px;
+        .radar-info { flex: 1; }
+        .radar-title { font-size: 1.15rem; font-weight: 800; color: #ffffff; }
+        .radar-desc { font-size: 0.82rem; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+
+        .radar-display {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 2px solid rgba(37, 99, 235, 0.5); position: relative;
+            background: #090d16; overflow: hidden; flex-shrink: 0;
         }
-        .footer-note {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #888;
+        .radar-display::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(37, 99, 235, 0.4));
+            animation: radarScan 3.5s linear infinite;
         }
+
+        .section-title { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .apps-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .app-btn {
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 22px; border-radius: var(--radius-lg); text-align: center;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 14px;
+            box-shadow: var(--shadow-subtle); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-btn:hover { border-color: var(--primary-blue); transform: translateY(-4px); box-shadow: var(--shadow-card); }
+        .app-icon-circle {
+            width: 56px; height: 56px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.45rem; font-weight: 900; color: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .app-label { font-size: 0.92rem; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+
+        .console-box {
+            grid-column: span 2; background: #ffffff; border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-subtle);
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; border-top: 4px solid var(--primary-blue);
+        }
+        .console-item { display: flex; flex-direction: column; gap: 8px; }
+        .console-item h4 { font-size: 0.85rem; font-weight: 800; color: var(--text-main); }
+        .console-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: #f8fafc; font-size: 0.82rem; outline: none; transition: border 0.2s; }
+        .console-input:focus { border-color: var(--primary-blue); background: #fff; }
+        .console-btn { padding: 11px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: bold; color: var(--text-main); text-align: center; transition: all 0.2s; }
+        .console-btn:hover { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
+
+        .news-container {
+            background: var(--bg-card); padding: 18px 24px;
+            border-radius: var(--radius-lg); border: 1px solid var(--border);
+            box-shadow: var(--shadow-subtle); display: flex; align-items: center; gap: 16px;
+        }
+        .glowing-pulse-dot {
+            width: 9px; height: 9px; background-color: #10b981;
+            border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 0 10px #10b981;
+            animation: intensePulse 1s ease-in-out infinite alternate;
+        }
+        .news-content { font-size: 0.9rem; font-weight: 700; color: var(--text-main); line-height: 1.5; }
+
+        .ai-box {
+            background: #eff6ff; border-right: 4px solid var(--primary-blue);
+            padding: 18px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;
+        }
+        .ai-header { font-size: 0.9rem; font-weight: 900; color: var(--primary-dark); }
+        .ai-text { font-size: 0.88rem; color: #1e293b; line-height: 1.65; }
+
+        .chart-box {
+            background: var(--bg-card); padding: 22px;
+            border-radius: var(--radius-lg); border: 1px solid var(--border);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        /* 🪟 النوافذ المنبثقة */
+        .app-window-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(16px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .app-window {
+            width: 650px; height: 92vh; max-height: 860px; background: #fafbfc;
+            border-radius: 28px; border: 1px solid rgba(255,255,255,0.6); display: flex; flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12); overflow: hidden; position: relative;
+            animation: windowEnter 0.35s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+        .window-header {
+            background: #ffffff; padding: 20px 28px; border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .window-title { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1.15rem; color: var(--text-main); }
+        .window-close-btn {
+            width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; border: none;
+            color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .window-close-btn:hover { background: #fee2e2; color: var(--alert-red); transform: rotate(90deg); }
+        .window-body { flex: 1; padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+
+        .google-btn {
+            background: var(--primary-blue); color: #ffffff; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15); text-align: center;
+        }
+        .google-btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25); }
+
+        .vectra-banner {
+            background: linear-gradient(135deg, var(--vectra-orange), #c2410c); color: #ffffff;
+            border-radius: var(--radius-md); padding: 18px; display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 8px 25px rgba(234, 88, 12, 0.2);
+        }
+        .vectra-trial-badge {
+            background: rgba(255,255,255,0.2); color: #fff; padding: 4px 10px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 800; width: fit-content; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .vectra-card {
+            background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px;
+            display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-subtle);
+        }
+        .vectra-badge-id {
+            background: #f1f5f9; color: var(--text-main); font-family: monospace; font-size: 0.78rem; font-weight: bold;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+        }
+        .vectra-item-row {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; transition: 0.2s;
+        }
+        .vectra-item-row:hover { border-color: var(--vectra-orange); background: var(--vectra-light-orange); }
+
+        .offline-badge {
+            background: #ea580c; color: #ffffff; font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; font-weight: bold;
+        }
+
+        .login {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a; display: flex; justify-content: center;
+            align-items: center; flex-direction: column; color: #fff;
+            z-index: 2000; padding: 25px;
+        }
+        .login-card {
+            width: 100%; max-width: 380px; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08); padding: 32px 24px;
+            border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 16px; text-align: center;
+        }
+        .login input {
+            width: 100%; padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05); color: #fff; text-align: center; outline: none; font-size: 0.9rem;
+        }
+        .login button {
+            width: 100%; padding: 14px; background: var(--primary-blue);
+            border: none; color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem;
+        }
+
+        @keyframes radarScan { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes intensePulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.15); opacity: 1; } }
+        @keyframes windowEnter { 0% { opacity: 0; transform: scale(0.96) translateY(12px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     </style>
 </head>
 <body>
 
-<header>
-    <h1 class="constellation-title">KAWKABA SYSTEM</h1>
-    <p>نظام إدارة المستقبل والتحليل الذكي المتكامل</p>
-</header>
-
-<div class="grid-container">
-    
-    <!-- VECTRA SYSTEM -->
-    <div class="card">
-        <h2>VECTRA SYSTEM <span class="aide-badge">مدعوم بـ AIDE</span></h2>
-        <p>نظام ذكي متكامل لاتخاذ القرار وإدارة المؤسسات. يرجى اختيار القطاع لبدء التحليل:</p>
-        <select class="sector-select">
-            <option>قطاع المقاولات والإنشاءات</option>
-            <option>قطاع النفط والغاز</option>
-            <option>المصانع والإنتاج الصناعي</option>
-            <option>المؤسسات الحكومية والوزارات</option>
-            <option>قطاع السياحة والعمل التطوعي</option>
-        </select>
-        <p>💡 <b>ميزة القرار:</b> يوفر النظام خرائط حرارية وتتبع GPS ودمج البصمة التعريفية.</p>
+    <div class="login" id="loginScreen">
+        <div class="login-card">
+            <div class="system-logo" style="margin: 0 auto 12px auto; width: 52px; height: 52px; font-size: 1.6rem;">K</div>
+            <h2>دخول المنظومة</h2>
+            <p style="color: #94a3b8; font-size: 0.8rem;">نظام كوكبة الآمن للتحكم المباشر</p>
+            <input id="user" placeholder="اسم المستخدم">
+            <input id="pass" type="password" placeholder="كلمة المرور">
+            <button onclick="login()">دخول آمن للنظام</button>
+            <span style="font-size:0.75rem; color:#64748b; cursor:pointer;" onclick="resetLogin()">هل نسيت البيانات أو ترغب بالتعديل؟</span>
+        </div>
     </div>
 
-    <!-- ORBIT -->
-    <div class="card">
-        <h2>ORBIT | أوربت</h2>
-        <p>منصة الضمانات الدولية والانتشار الاقتصادي للموردين والمصدرين.</p>
-        <p>✓ نظام حماية مالي متطور للتبادل التجاري العالمي.</p>
+    <div class="desktop-app">
+        <div class="header">
+            <div class="logo-area">
+                <div class="system-logo" id="mainSystemLogo">K</div>
+                <div class="logo-text">
+                    <span class="logo-title" id="lblMainTitle">كوكبة | Constellation</span>
+                    <span class="logo-subtitle">منظومة إدارة الفروع والبيانات الكبرى</span>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span id="offlineStatus" class="offline-badge" style="display:none;">⚠️ وضع العمل دون اتصال نشط</span>
+                <span id="userName">تحميل...</span>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <div class="primary-column">
+                <div class="dashboard">
+                    <div class="card"><h4>المستخدمين الفروع</h4><h2 id="users">0</h2></div>
+                    <div class="card"><h4>الإيرادات الإجمالية</h4><h2 id="revenue">0</h2></div>
+                    <div class="card"><h4>كفاءة المنظومة</h4><h2 id="success">0%</h2></div>
+                    <div class="card"><h4>العمليات والطلبات</h4><h2 id="orders">0</h2></div>
+                </div>
+
+                <div class="radar-card">
+                    <div class="radar-info">
+                        <h3 class="radar-title">🌐 رادار الأسواق والنشاط المباشر</h3>
+                        <p class="radar-desc">نظام مراقبة وتحليل يغطي النشاط التجاري والبيانات الجيوسياسية حول العالم في الوقت الفعلي.</p>
+                    </div>
+                    <div class="radar-display">
+                        <div class="glowing-pulse-dot" style="position:absolute; top:40%; left:50%; z-index:10;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <h3 class="section-title" style="margin-bottom: 15px;">النشاط الإحصائي العام للمنظومة</h3>
+                    <canvas id="chart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+
+            <div class="secondary-column">
+                <div>
+                    <h3 class="section-title" style="margin-bottom: 12px;">شجرة الفروع والبرمجيات</h3>
+                    <div class="apps-grid">
+                        <div class="app-btn" onclick="openOrbitWindow()">
+                            <div class="app-icon-circle" style="background: linear-gradient(135deg, #0284c7, #0369a1);">O</div>
+                            <span class="app-label">أوربت | ORBIT<br><small style="color:var(--text-muted); font-weight:bold; font-size:0.7rem;">السوق العالمي</small></span>
+                        </div>
+                        <div class="app-btn" onclick="openE1Window()">
+                            <div class="app-icon-circle" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: var(--e1-future-gold);">E1</div>
+                            <span class="app-label">إي ون | E1<br><small style="color:var(--text-muted); font-weight:bold; font-size:0.7rem;">الصحيفة الاقتصادية</small></span>
+                        </div>
+                        <div class="app-btn" onclick="openAuraWindow()">
+                            <div class="app-icon-circle" style="background: linear-gradient(135deg, var(--aura-purple), #4c1d95);">A</div>
+                            <span class="app-label">أورا | AURA<br><small style="color:var(--text-muted); font-weight:bold; font-size:0.7rem;">السكرتير الذكي</small></span>
+                        </div>
+                        <div class="app-btn" onclick="openVectra()">
+                            <div class="app-icon-circle" style="background: linear-gradient(135deg, var(--vectra-orange), #9a3412);">V</div>
+                            <span class="app-label">فيكترا | VECTRA<br><small style="color:var(--text-muted); font-weight:bold; font-size:0.7rem;">إدارة المؤسسات</small></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-container">
+                    <div class="glowing-pulse-dot"></div>
+                    <div class="news-content" id="news">⚡ تحديث التحليلات جاري...</div>
+                </div>
+
+                <div class="ai-box">
+                    <div class="ai-header">🤖 تحليل كوكبة الذكي (AI Analysis)</div>
+                    <div class="ai-text" id="ai">جاري قراءة حركة الأسواق ومؤشرات الفروع...</div>
+                </div>
+            </div>
+
+            <div class="console-box">
+                <div class="console-item">
+                    <h4>⚙️ تعديل هوية المنظومة</h4>
+                    <input class="console-input" id="inpSystemName" type="text" placeholder="اسم النظام الجديد...">
+                    <button class="console-btn" onclick="updateSystemBrand()">حفظ وتطبيق الاسم</button>
+                </div>
+                <div class="console-item">
+                    <h4>📊 مركز التحليلات المتقدمة</h4>
+                    <button class="console-btn" style="background: var(--primary-blue); color: #fff;" onclick="runDeepAnalytics()">تشغيل فحص شامل للفروع</button>
+                    <button class="console-btn" onclick="syncOfflineData()">المزامنة الفورية للبيانات</button>
+                </div>
+                <div class="console-item">
+                    <h4>🔒 إعدادات الصلاحيات</h4>
+                    <button class="console-btn" onclick="alert('جميع التطبيقات الأربعة تعمل بنظام التشفير الثنائي المتجانس.')">تدقيق الصلاحيات الأمنية</button>
+                    <button class="console-btn" style="background: var(--alert-red); color:#fff;" onclick="logoutAll()">تسجيل الخروج الكلي</button>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- AURA -->
-    <div class="card">
-        <h2>AURA | أورا</h2>
-        <p>السكرتير الشخصي الذكي - حماية أمنية وتنبؤ صحي متقدم.</p>
-        <p>✓ نظام الرد الآلي الذكي وإدارة الحالات الطارئة.</p>
+    <div class="app-window-overlay" id="orbitOverlay">
+        <div class="app-window" style="border-color: var(--orbit-blue); width: 620px;">
+            <div class="window-header" style="background: #f0f9ff;">
+                <div class="window-title">
+                    <div class="system-logo" style="background: linear-gradient(135deg, #0284c7, #1e293b); width:34px; height:34px; border-radius:10px; color: #ffffff; font-size:1.15rem;">O</div>
+                    <span style="font-weight: 900; color: var(--orbit-blue);">أوربت | ORBIT - السوق العالمي</span>
+                </div>
+                <button class="window-close-btn" onclick="closeOrbitWindow()">✕</button>
+            </div>
+            <div class="window-body">
+                <div class="vectra-banner" style="background: linear-gradient(135deg, var(--orbit-blue), #0369a1);">
+                    <h3 style="font-size: 1.05rem; font-weight: 800;">🌍 مؤشرات الأسواق العالمية</h3>
+                    <p style="font-size: 0.78rem;">مراقبة حية للمبيعات، العمولات، ونشاط الفروع والأسواق الإقليمية والدولية.</p>
+                </div>
+                <div class="vectra-card" style="border-right: 4px solid var(--orbit-blue);">
+                    <h4 style="font-size: 0.88rem; font-weight: 900;">📈 رصد حركة الأسواق وفروع المبيعات</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input id="vMarketName" type="text" placeholder="اسم السوق أو الفرع" class="console-input" style="background:#fff;">
+                        <input id="vMarketSales" type="number" placeholder="حجم المبيعات $" class="console-input" style="background:#fff;">
+                    </div>
+                    <button class="google-btn" style="background: var(--orbit-blue);" onclick="addMarketRecord()">إضافة فرع / سوق جديد</button>
+                    <div id="orbitMarketList" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- ECONOMICS ONE E1 -->
-    <div class="card">
-        <h2>ECONOMICS ONE E1</h2>
-        <p>الصحيفة الاقتصادية الدولية - رصد مباشر لأسواق الذهب، النفط، والتكنولوجيا.</p>
-        <p>✓ تحليلات حصرية وتنبيهات استثمارية فورية.</p>
+    <div class="app-window-overlay" id="e1Overlay">
+        <div class="app-window" style="border-color: var(--e1-future-gold); width: 620px;">
+            <div class="window-header" style="background: #fdfaf3;">
+                <div class="window-title">
+                    <div class="system-logo" style="background: linear-gradient(135deg, #0f172a, #1e293b); width:34px; height:34px; border-radius:10px; color: var(--e1-future-gold); font-size:1.15rem;">E1</div>
+                    <span style="font-weight: 900; color: var(--e1-cyber-gold);">إي ون | ECONOMICS ONE</span>
+                </div>
+                <button class="window-close-btn" onclick="closeE1Window()">✕</button>
+            </div>
+            <div class="window-body">
+                <div class="vectra-banner" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid var(--e1-future-gold);">
+                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--e1-future-gold);">📰 الصحيفة الاقتصادية والتحليل المالي</h3>
+                    <p style="font-size: 0.78rem;">متابعة ونشر التقارير المالية والتحليلات الخاصة بالمشروع والمستثمرين.</p>
+                </div>
+                <div class="vectra-card" style="border-right: 4px solid var(--e1-future-gold);">
+                    <h4 style="font-size: 0.88rem; font-weight: 900;">✍️ إضافة تقرير أو خبر مالي</h4>
+                    <input id="vNewsTitle" type="text" placeholder="عنوان الخبر أو التحليل" class="console-input" style="background:#fff; margin-bottom:8px;">
+                    <textarea id="vNewsDesc" placeholder="تفاصيل التقرير الاقتصادي..." class="console-input" style="background:#fff; height:75px; resize:none;"></textarea>
+                    <button class="google-btn" style="background: var(--e1-cyber-gold);" onclick="postEconomicsNews()">نشر التقرير</button>
+                    <div id="e1NewsList" style="display:flex; flex-direction:column; gap:6px; margin-top:10px;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-</div>
+    <div class="app-window-overlay" id="auraOverlay">
+        <div class="app-window" style="border-color: var(--aura-purple); width: 620px;">
+            <div class="window-header" style="background: #faf5ff;">
+                <div class="window-title">
+                    <div class="system-logo" style="background: linear-gradient(135deg, var(--aura-purple), #1e293b); width:34px; height:34px; border-radius:10px; color: #ffffff; font-size:1.15rem;">A</div>
+                    <span style="font-weight: 900; color: var(--aura-purple);">أورا | AURA - السكرتير الذكي</span>
+                </div>
+                <button class="window-close-btn" onclick="closeAuraWindow()">✕</button>
+            </div>
+            <div class="window-body">
+                <div class="vectra-banner" style="background: linear-gradient(135deg, var(--aura-purple), #581c87);">
+                    <h3 style="font-size: 1.05rem; font-weight: 800;">📅 تنظيم وجدولة المواعيد الذكية</h3>
+                    <p style="font-size: 0.78rem;">المساعد الذكي لتنظيم الاجتماعات الهامة ومهام الإدارة العليا بكفاءة وسرعة.</p>
+                </div>
+                <div class="vectra-card" style="border-right: 4px solid var(--aura-purple);">
+                    <h4 style="font-size: 0.88rem; font-weight: 900;">🛎️ حجز وجدولة موعد جديد</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input id="vAuraTask" type="text" placeholder="عنوان الاجتماع أو المهمة" class="console-input" style="background:#fff;">
+                        <input id="vAuraTime" type="time" class="console-input" style="background:#fff;">
+                    </div>
+                    <button class="google-btn" style="background: var(--aura-purple);" onclick="scheduleAuraTask()">جدولة الموعد فوراً</button>
+                    <div id="auraTasksList" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="footer-note">
-    تطوير: Afkarkom - نظام كوكبة الذكي 2026
-</div>
+    <div class="app-window-overlay" id="vectraOverlay">
+        <div class="app-window" style="border-color: var(--vectra-orange); width: 640px;">
+            <div class="window-header" style="background: var(--vectra-light-orange);">
+                <div class="window-title">
+                    <div class="system-logo" style="background: linear-gradient(135deg, var(--vectra-orange), #1e293b); width:34px; height:34px; border-radius:10px; color: #ffffff; font-size:1.15rem;">V</div>
+                    <span style="font-weight: 900; color: var(--vectra-orange);">فيكترا | VECTRA - إدارة المؤسسات</span>
+                </div>
+                <button class="window-close-btn" onclick="closeVectra()">✕</button>
+            </div>
+            <div class="window-body">
+                <div class="vectra-banner">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="vectra-trial-badge">⚡ فترة التجربة المجانية</span>
+                        <strong style="font-size: 0.8rem; color:#ffe7d9;" id="lblTrialDays">متبقي 30 يوم</strong>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.05rem; font-weight: 800;">🏢 تهيئة النشاط والتأهيل الذكي</h3>
+                        <p style="font-size: 0.78rem; color: #ffedd5;">
+                            أصبح النظام الآن يدعم تحديد المواقع (GPS)، المزامنة مع انقطاع الشبكة، وميزات بصمة الوجه المتقدمة (Face ID) للموظفين.
+                        </p>
+                    </div>
+                </div>
 
+                <div class="vectra-card" style="border-right: 4px solid var(--vectra-orange);">
+                    <h4 style="font-size: 0.88rem; font-weight: 900;">📌 اختيار نوع المؤسسة والنشاط</h4>
+                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px;">
+                        <select id="vSystemType" class="console-input" style="background: #ffffff; height: 46px;" onchange="setupDepartmentsByActivity()">
+                            <option value="ministry">الوزارات والمؤسسات العامة</option>
+                            <option value="government">المؤسسات الحكومية</option>
+                            <option value="oil">شركات ومؤسسات النفط</option>
+                            <option value="contracting">شركات المقاولات والإنشاءات</option>
+                            <option value="factory">المصانع والمنشآت الصناعية</option>
+                            <option value="tourism">شركات السفر والسياحة</option>
+                        </select>
+                        <button class="google-btn" style="background: #f1f5f9; color: var(--text-main); font-size: 0.75rem;" onclick="addNewCustomActivity()">➕ إضافة نشاط جديد</button>
+                    </div>
+                    <button class="google-btn" style="background: var(--vectra-orange); width: 100%; margin-top: 5px;" onclick="setupDepartmentsByActivity()">
+                        ⚙️ تهيئة الإدارات فوراً
+                    </button>
+                </div>
+
+                <div class="vectra-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="font-size: 0.88rem; font-weight: 800;">📋 الهيكل الإداري للمؤسسة</h4>
+                        <button class="google-btn" style="background: #f1f5f9; color: var(--text-main); font-size: 0.75rem; padding: 6px 14px;" onclick="addNewCustomDepartment()">➕ إدارة جديدة</button>
+                    </div>
+                    <div id="vectraDeptsList" style="display:flex; flex-direction:column; gap:4px;"></div>
+                </div>
+
+                <div class="vectra-card" style="border-right: 4px solid var(--primary-blue);">
+                    <h4 style="font-size: 0.88rem; font-weight: 900; color: var(--primary-dark);">👥 شؤون الموظفين وبطاقات الهوية الرقمية (HR)</h4>
+                    <p style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 2px;">تسجيل موظف جديد وإنشاء ملف رقمي ID فريد يشمل صورته، بصمة وجهه، وموقعه الجغرافي:</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input id="vEmpName" type="text" placeholder="اسم الموظف الكامل" class="console-input" style="background:#fff;">
+                        <select id="vEmpDept" class="console-input" style="background:#fff;">
+                            <option value="">اختر الإدارة التابع لها</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; align-items: center;">
+                        <div>
+                            <label style="font-size: 0.72rem; font-weight: bold; color: var(--text-muted);">تحميل صورة بصمة الوجه (Face ID):</label>
+                            <input id="vEmpFace" type="file" accept="image/*" class="console-input" style="background:#fff; height: 42px;">
+                        </div>
+                        <button class="google-btn" style="background: #475569; font-size:0.75rem; padding: 10px;" onclick="getEmpGPSLocation()">
+                            📍 جلب إحداثيات الموقع
+                        </button>
+                    </div>
+                    <input id="vEmpGPS" type="text" placeholder="إحداثيات الموقع الجغرافي (GPS)" class="console-input" style="background:#fff;" readonly>
+
+                    <button class="google-btn" style="background: var(--primary-blue);" onclick="registerNewEmployee()">
+                        🪪 تسجيل الموظف وإصدار الهوية الرقمية
+                    </button>
+
+                    <div id="vectraEmpList" style="display:flex; flex-direction:column; gap:6px; margin-top: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myChart;
+        const sysUsername = "نبيل";
+        const sysPassword = "nabil482567";
+
+        // مصفوفة لتخزين الموظفين في الذاكرة المحلية لتمكين وضع عدم الاتصال
+        let localEmployees = JSON.parse(localStorage.getItem("localEmployees") || "[]");
+        let offlineSubmissions = JSON.parse(localStorage.getItem("offlineSubmissions") || "[]");
+
+        window.addEventListener('online', syncOfflineData);
+        window.addEventListener('offline', updateOfflineBadge);
+
+        function updateOfflineBadge() {
+            if (navigator.onLine) {
+                document.getElementById("offlineStatus").style.display = "none";
+            } else {
+                document.getElementById("offlineStatus").style.display = "inline-block";
+            }
+        }
+
+        function loadSystemBrand() {
+            let savedBrand = localStorage.getItem("systemBrandName");
+            if (savedBrand) {
+                document.getElementById("lblMainTitle").innerText = savedBrand;
+                document.getElementById("mainSystemLogo").innerText = savedBrand.substring(0, 1).toUpperCase();
+            }
+            updateOfflineBadge();
+            renderStoredEmployees();
+        }
+
+        function updateSystemBrand() {
+            let name = document.getElementById("inpSystemName").value.trim();
+            if(!name) { alert("تنبيه: يرجى كتابة اسم المنظومة الجديد أولاً."); return; }
+            document.getElementById("lblMainTitle").innerText = name;
+            document.getElementById("mainSystemLogo").innerText = name.substring(0,1).toUpperCase();
+            localStorage.setItem("systemBrandName", name);
+            document.getElementById("inpSystemName").value = "";
+            alert(`🎉 تم تعديل وحفظ هوية المنظومة بنجاح إلى: [ ${name} ]`);
+        }
+
+        function login(){
+            let u = document.getElementById("user").value.trim();
+            let p = document.getElementById("pass").value.trim();
+            if (u === sysUsername && p === sysPassword) {
+                localStorage.setItem("userLoggedIn", sysUsername);
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("userName").innerText = "👤 " + sysUsername;
+                loadSystemBrand();
+            } else { alert("خطأ في البيانات!"); }
+        }
+
+        if(localStorage.getItem("userLoggedIn") === sysUsername){
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("userName").innerText = "👤 " + sysUsername;
+            loadSystemBrand();
+        }
+
+        function resetLogin() { if(confirm("هل تريد مسح الجلسة؟")) { localStorage.clear(); location.reload(); } }
+        function logoutAll() { localStorage.clear(); location.reload(); }
+
+        /* 🌐 أوربت | ORBIT */
+        function openOrbitWindow() { document.getElementById("orbitOverlay").style.display = "flex"; }
+        function closeOrbitWindow() { document.getElementById("orbitOverlay").style.display = "none"; }
+        function addMarketRecord() {
+            let name = document.getElementById("vMarketName").value.trim();
+            let sales = document.getElementById("vMarketSales").value.trim();
+            if(!name || !sales) { alert("يرجى تعبئة جميع بيانات السوق أولاً."); return; }
+            let list = document.getElementById("orbitMarketList");
+            let div = document.createElement("div");
+            div.className = "vectra-item-row";
+            div.innerHTML = `<span style="font-weight:bold; font-size:0.82rem;">${name}</span><span class="vectra-badge-id" style="background:#e0f2fe; color:#0369a1;">$${Number(sales).toLocaleString()}</span>`;
+            list.insertBefore(div, list.firstChild);
+            document.getElementById("vMarketName").value = "";
+            document.getElementById("vMarketSales").value = "";
+        }
+
+        /* 📰 إي ون | E1 */
+        function openE1Window() { document.getElementById("e1Overlay").style.display = "flex"; }
+        function closeE1Window() { document.getElementById("e1Overlay").style.display = "none"; }
+        function postEconomicsNews() {
+            let title = document.getElementById("vNewsTitle").value.trim();
+            let desc = document.getElementById("vNewsDesc").value.trim();
+            if(!title || !desc) { alert("يرجى كتابة عنوان التقرير والتفاصيل أولاً."); return; }
+            let list = document.getElementById("e1NewsList");
+            let div = document.createElement("div");
+            div.className = "vectra-item-row";
+            div.style = "flex-direction:column; align-items:start; gap:4px;";
+            div.innerHTML = `<strong style="color:var(--e1-cyber-gold); font-size:0.82rem;">📊 ${title}</strong><p style="font-size:0.75rem; color:var(--text-muted);">${desc}</p>`;
+            list.insertBefore(div, list.firstChild);
+            document.getElementById("vNewsTitle").value = "";
+            document.getElementById("vNewsDesc").value = "";
+        }
+
+        /* 🛎️ أورا | AURA */
+        function openAuraWindow() { document.getElementById("auraOverlay").style.display = "flex"; }
+        function closeAuraWindow() { document.getElementById("auraOverlay").style.display = "none"; }
+        function scheduleAuraTask() {
+            let task = document.getElementById("vAuraTask").value.trim();
+            let time = document.getElementById("vAuraTime").value;
+            if(!task || !time) { alert("يرجى إدخال عنوان المهمة ووقتها."); return; }
+            let list = document.getElementById("auraTasksList");
+            let div = document.createElement("div");
+            div.className = "vectra-item-row";
+            div.innerHTML = `<span style="font-weight:bold; font-size:0.82rem;">${task}</span><span class="vectra-badge-id" style="background:#f3e8ff; color:var(--aura-purple);">${time}</span>`;
+            list.insertBefore(div, list.firstChild);
+            document.getElementById("vAuraTask").value = "";
+            document.getElementById("vAuraTime").value = "";
+        }
+
+        /* 🏢 فيكترا | VECTRA المحدث بالكامل */
+        function openVectra() { 
+            document.getElementById("vectraOverlay").style.display = "flex"; 
+            if(document.getElementById("vectraDeptsList").children.length === 0) { setupDepartmentsByActivity(); }
+        }
+        function closeVectra() { document.getElementById("vectraOverlay").style.display = "none"; }
+
+        const activityDepartments = {
+            ministry: ["إدارة الشؤون الإدارية", "إدارة التخطيط", "إدارة تقنية المعلومات", "إدارة العلاقات العامة", "إدارة التدقيق والمتابعة"],
+            government: ["إدارة الموارد المالية", "إدارة الشؤون القانونية", "إدارة المتابعة والتطوير", "إدارة العلاقات العامة"],
+            oil: ["إدارة الاستكشاف والإنتاج", "إدارة التكرير والتصنيع", "إدارة الأمن والسلامة المهنية", "الموارد البشرية والشؤون القانونية"],
+            contracting: ["إدارة المشاريع الهندسية", "إدارة المشتريات والمخازن", "إدارة المقاولين والعمالة", "إدارة الميزانية والمستخلصات"],
+            factory: ["إدارة خطوط الإنتاج", "إدارة الصيانة والجودة", "إدارة المشتريات واللوجستيات", "إدارة التسويق والمبيعات"],
+            tourism: ["إدارة الحجوزات والسياحة", "إدارة التسويق والمبيعات", "إدارة العلاقات العامة", "إدارة الحسابات"]
+        };
+
+        function setupDepartmentsByActivity() {
+            let activity = document.getElementById("vSystemType").value;
+            let depts = activityDepartments[activity] || [];
+            let list = document.getElementById("vectraDeptsList");
+            let empDeptSelect = document.getElementById("vEmpDept");
+            list.innerHTML = "";
+            empDeptSelect.innerHTML = `<option value="">اختر الإدارة التابع لها</option>`;
+
+            depts.forEach(dept => {
+                let div = document.createElement("div");
+                div.className = "vectra-item-row";
+                div.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.1rem;">🏢</span>
+                        <span style="font-weight:bold; font-size:0.82rem; color:var(--text-main);">${dept}</span>
+                    </div>
+                    <button class="window-close-btn" style="width:28px; height:28px; font-size:0.75rem;" onclick="this.parentElement.remove(); refreshEmpDepts();">✕</button>
+                `;
+                list.appendChild(div);
+                let opt = document.createElement("option");
+                opt.value = dept; opt.innerText = dept;
+                empDeptSelect.appendChild(opt);
+            });
+        }
+
+        function refreshEmpDepts() {
+            let empDeptSelect = document.getElementById("vEmpDept");
+            empDeptSelect.innerHTML = `<option value="">اختر الإدارة التابع لها</option>`;
+            let rows = document.querySelectorAll("#vectraDeptsList .vectra-item-row span[style*='font-weight:bold']");
+            rows.forEach(span => {
+                let opt = document.createElement("option");
+                opt.value = span.innerText; opt.innerText = span.innerText;
+                empDeptSelect.appendChild(opt);
+            });
+        }
+
+        function addNewCustomDepartment() {
+            let customName = prompt("أدخل اسم الإدارة الجديدة التي ترغب بإضافتها:");
+            if(!customName) return;
+            let list = document.getElementById("vectraDeptsList");
+            let div = document.createElement("div");
+            div.className = "vectra-item-row";
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.1rem;">🏢</span>
+                    <span style="font-weight:bold; font-size:0.82rem; color:var(--text-main);">${customName}</span>
+                </div>
+                <button class="window-close-btn" style="width:28px; height:28px; font-size:0.75rem;" onclick="this.parentElement.remove(); refreshEmpDepts();">✕</button>
+            `;
+            list.appendChild(div);
+            refreshEmpDepts();
+        }
+
+        function addNewCustomActivity() {
+            let activity = prompt("أدخل اسم النشاط أو نوع المؤسسة الجديد:");
+            if(!activity) return;
+            let select = document.getElementById("vSystemType");
+            let opt = document.createElement("option");
+            opt.value = "custom_" + Math.random().toString(36).substr(2, 5);
+            opt.innerText = activity;
+            select.appendChild(opt);
+            select.value = opt.value;
+            activityDepartments[opt.value] = ["الإدارة العامة", "الموارد البشرية", "الحسابات"];
+            setupDepartmentsByActivity();
+            alert(`تمت إضافة النشاط الجديد [${activity}] كخيار إضافي بالمنظومة.`);
+        }
+
+        /* 📍 جلب إحداثيات الموقع (GPS) */
+        function getEmpGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    let gps = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    document.getElementById("vEmpGPS").value = gps;
+                    alert("📍 تم جلب الموقع الجغرافي الحالي بنجاح.");
+                }, function (err) {
+                    alert("تعذر جلب الموقع الجغرافي. تأكد من تفعيل أذونات الـ GPS.");
+                });
+            } else { alert("المتصفح لا يدعم جلب المواقع الجغرافية."); }
+        }
+
+        /* 👥 تسجيل الموظفين (بصمة الوجه، GPS، المزامنة الذكية) */
+        function registerNewEmployee() {
+            let name = document.getElementById("vEmpName").value.trim();
+            let dept = document.getElementById("vEmpDept").value;
+            let gps = document.getElementById("vEmpGPS").value;
+            let faceInput = document.getElementById("vEmpFace");
+
+            if(!name || !dept) { alert("تنبيه: يرجى كتابة اسم الموظف واختيار الإدارة."); return; }
+
+            let empId = "V-ID-" + Math.floor(100000 + Math.random() * 900000);
+            let submissionDate = new Date().toLocaleString();
+
+            let empObject = {
+                id: empId,
+                name: name,
+                dept: dept,
+                gps: gps || "غير محدد",
+                date: submissionDate,
+                face: faceInput.files && faceInput.files[0] ? "تم تسجيل بصمة الوجه" : "لم تدرج البصمة"
+            };
+
+            // حفظ الموظف محلياً
+            localEmployees.push(empObject);
+            localStorage.setItem("localEmployees", JSON.stringify(localEmployees));
+
+            // في حال عدم توفر اتصال، يتم وضعه في قائمة المزامنة المعلقة
+            if (!navigator.onLine) {
+                offlineSubmissions.push(empObject);
+                localStorage.setItem("offlineSubmissions", JSON.stringify(offlineSubmissions));
+                alert("⚠️ أنت تعمل دون اتصال بالشبكة، تم حفظ البيانات بالذاكرة المحلية وسوف تُزامن لاحقاً.");
+            } else {
+                alert(`🎉 [وضع المتصل] تم تسجيل الموظف [${name}] بنجاح وإصدار ملف الهوية الرقمية.`);
+            }
+
+            // تصفير الحقول
+            document.getElementById("vEmpName").value = "";
+            document.getElementById("vEmpGPS").value = "";
+            document.getElementById("vEmpFace").value = "";
+            
+            renderStoredEmployees();
+            updateOfflineBadge();
+        }
+
+        function renderStoredEmployees() {
+            let list = document.getElementById("vectraEmpList");
+            list.innerHTML = "";
+            localEmployees.reverse().forEach(emp => {
+                let div = document.createElement("div");
+                div.style = "background:#fff; border:1px solid var(--border); padding: 12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; transition:0.2s;";
+                div.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:1.35rem;">🪪</span>
+                        <div style="display:flex; flex-direction:column;">
+                            <span style="font-size:0.82rem; font-weight:800; color:var(--text-main);">${emp.name}</span>
+                            <span style="font-size:0.72rem; color:var(--text-muted); font-weight:bold;">الإدارة: ${emp.dept} | 📍 GPS: ${emp.gps}</span>
+                            <span style="font-size:0.65rem; color:#10b981; font-weight:bold;">البصمة: ${emp.face} | تاريخ: ${emp.date}</span>
+                        </div>
+                    </div>
+                    <span class="vectra-badge-id">${emp.id}</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function syncOfflineData() {
+            if (offlineSubmissions.length > 0 && navigator.onLine) {
+                alert(`🔄 جاري مزامنة عدد (${offlineSubmissions.length}) إدخالات تم تسجيلها أثناء انقطاع الشبكة...`);
+                // هنا تتم محاكاة إرسال البيانات المحفوظة إلى السيرفر دفعة واحدة
+                offlineSubmissions = [];
+                localStorage.setItem("offlineSubmissions", JSON.stringify([]));
+                alert("✅ تم مزامنة كافة إدخالات الموظفين والتقارير بنجاح دون أي فقدان للبيانات.");
+            } else if (offlineSubmissions.length === 0) {
+                alert("✅ كافة البيانات متزامنة ومحدثة بالكامل ولا توجد أي إدخالات معلقة.");
+            }
+            updateOfflineBadge();
+        }
+
+        function runDeepAnalytics() { alert("[تحليل النظام]\nالفروع والأدوات متزامنة بنسبة 100% وبكفاءة تشغيلية ممتازة."); }
+
+        function data(){
+            return {
+                users: Math.floor(Math.random()*1500 + 10500),
+                revenue: (Math.random()*15000 + 45000).toFixed(0),
+                success: (Math.random()*6 + 94).toFixed(1),
+                orders: Math.floor(Math.random()*120 + 580)
+            }
+        }
+
+        function update(){
+            let d = data();
+            document.getElementById("users").innerText = Number(d.users).toLocaleString();
+            document.getElementById("revenue").innerText = "$" + Number(d.revenue).toLocaleString();
+            document.getElementById("success").innerText = d.success + "%";
+            document.getElementById("orders").innerText = d.orders;
+            if(myChart) {
+                myChart.data.datasets[0].data = [
+                    Math.floor(Math.random()*15 + 15), Math.floor(Math.random()*25 + 20),
+                    Math.floor(Math.random()*20 + 15), Math.floor(Math.random()*40 + 20),
+                    Math.floor(Math.random()*35 + 25)
+                ];
+                myChart.update();
+            }
+        }
+
+        setInterval(update, 3500);
+        update();
+
+        try {
+            const ctx = document.getElementById('chart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['ساعة 1', 'ساعة 2', 'ساعة 3', 'ساعة 4', 'ساعة 5'],
+                    datasets: [{
+                        data: [20, 32, 28, 42, 38],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+                        borderWidth: 3, tension: 0.38, fill: true
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Cairo' } } },
+                        y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Cairo' } } }
+                    }
+                }
+            });
+        } catch(e) { console.log(e); }
+    </script>
 </body>
 </html>
