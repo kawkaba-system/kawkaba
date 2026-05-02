@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kawkaba System | نظام الكوكبة</title>
+    <style>
+        :root {
+            --bg-dark: #0a0c14;
+            --card-bg: #121624;
+            --gold: #d4af37;
+            --blue: #22a6b3;
+            --text-main: #f0f6ff;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            padding: 40px;
+            text-align: center;
+        }
+        .constellation-title {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1200px;
+            padding-bottom: 50px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #2d3436;
+            padding: 25px;
+            border-radius: 15px;
+            transition: 0.3s;
+            position: relative;
+        }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        h2 { color: var(--blue); margin-top: 0; }
+        .sector-select {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            background: #1e272e;
+            color: white;
+            border: 1px solid var(--blue);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .aide-badge {
+            background: var(--gold);
+            color: black;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .footer-note {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 class="constellation-title">KAWKABA SYSTEM</h1>
+    <p>نظام إدارة المستقبل والتحليل الذكي المتكامل</p>
+</header>
+
+<div class="grid-container">
+    
+    <!-- VECTRA SYSTEM -->
+    <div class="card">
+        <h2>VECTRA SYSTEM <span class="aide-badge">مدعوم بـ AIDE</span></h2>
+        <p>نظام ذكي متكامل لاتخاذ القرار وإدارة المؤسسات. يرجى اختيار القطاع لبدء التحليل:</p>
+        <select class="sector-select">
+            <option>قطاع المقاولات والإنشاءات</option>
+            <option>قطاع النفط والغاز</option>
+            <option>المصانع والإنتاج الصناعي</option>
+            <option>المؤسسات الحكومية والوزارات</option>
+            <option>قطاع السياحة والعمل التطوعي</option>
+        </select>
+        <p>💡 <b>ميزة القرار:</b> يوفر النظام خرائط حرارية وتتبع GPS ودمج البصمة التعريفية.</p>
+    </div>
+
+    <!-- ORBIT -->
+    <div class="card">
+        <h2>ORBIT | أوربت</h2>
+        <p>منصة الضمانات الدولية والانتشار الاقتصادي للموردين والمصدرين.</p>
+        <p>✓ نظام حماية مالي متطور للتبادل التجاري العالمي.</p>
+    </div>
+
+    <!-- AURA -->
+    <div class="card">
+        <h2>AURA | أورا</h2>
+        <p>السكرتير الشخصي الذكي - حماية أمنية وتنبؤ صحي متقدم.</p>
+        <p>✓ نظام الرد الآلي الذكي وإدارة الحالات الطارئة.</p>
+    </div>
+
+    <!-- ECONOMICS ONE E1 -->
+    <div class="card">
+        <h2>ECONOMICS ONE E1</h2>
+        <p>الصحيفة الاقتصادية الدولية - رصد مباشر لأسواق الذهب، النفط، والتكنولوجيا.</p>
+        <p>✓ تحليلات حصرية وتنبيهات استثمارية فورية.</p>
+    </div>
+
+</div>
+
+<div class="footer-note">
+    تطوير: Afkarkom - نظام كوكبة الذكي 2026
+</div>
+
+</body>
+</html>
